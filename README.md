@@ -131,3 +131,26 @@ Query OK, 0 rows affected (0.00 sec)
 ```
 $ pip install -U pip cookiecutter
 ```
+
+Следующим этапом является создание пакета. Он выполняется при помощи команды:
+
+```shell
+$ cookiecutter gh:Pylons/pyramid-cookiecutter-alchemy --checkout 1.9-branch
+project_name [Pyramid Scaffold]: Stamper Server
+repo_name [stamper_server]: stamper
+
+===============================================================================
+Documentation: https://docs.pylonsproject.org/projects/pyramid/en/latest/
+Tutorials:     https://docs.pylonsproject.org/projects/pyramid_tutorials/en/latest/
+Twitter:       https://twitter.com/PylonsProject
+Mailing List:  https://groups.google.com/forum/#!forum/pylons-discuss
+Welcome to Pyramid.  Sorry for the convenience.
+===============================================================================
+
+Change directory into your newly created project.
+    cd stamper
+. . . . . . . . . . . .
+```
+
+Установка созданного пакета в режим разработки осуществляется командой:
+```shell
