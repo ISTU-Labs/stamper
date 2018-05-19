@@ -19,6 +19,7 @@ requires = [
     'mysqlclient',
     'transaction',
     'zope.sqlalchemy',
+    'pyramid_chameleon',
     'waitress',
 ]
 
