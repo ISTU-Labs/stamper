@@ -29,7 +29,7 @@ tests_require = [
 
 setup(
     name='stamper',
-    version='0.0',
+    version='0.0.1',
     description='Stamper Server',
     long_description=README + '\n\n' + CHANGES,
     classifiers=[
