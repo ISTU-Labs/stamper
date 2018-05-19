@@ -154,3 +154,46 @@ Change directory into your newly created project.
 
 Установка созданного пакета в режим разработки осуществляется командой:
 ```shell
+
+### Инициализация базы данных
+
+Первый этап - собственно создание базы данных:
+
+```shell
+$ mysql -h 172.17.0.2 -u stamper -pstamperpsw
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5
+Server version: 5.7.21-21 Percona Server (GPL), Release '21', Revision '2a37e4e'
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]> CREATE DATABASE stamper;
+Query OK, 1 row affected (0.00 sec)
+```
+Второй этап - порождение таблиц, которое выполняется при помощи сгенерированного скрипта (сценария).
+
+```shell
+(stumper) eugeneai@inca ~/projects/stamper
+$ initialize_stamper_db development.ini
+2018-05-19 11:07:39,675 INFO  [sqlalchemy.engine.base.Engine:1151][MainThread] SHOW VARIABLES LIKE 'sql_mode'
+2018-05-19 11:07:39,675 INFO  [sqlalchemy.engine.base.Engine:1154][MainThread] ()
+2018-05-19 11:07:39,682 INFO  [sqlalchemy.engine.base.Engine:1151][MainThread] SELECT DATABASE()
+2018-05-19 11:07:39,682 INFO  [sqlalchemy.engine.base.Engine:1154][MainThread] ()
+2018-05-19 11:07:39,682 INFO  [sqlalchemy.engine.base.Engine:1151][MainThread] show collation where `Charset` = 'utf8' and `Collation` = 'utf8_bin'
+. . . . . . .
+```
+
+Запуск тестового сервера и обработка главной страницы сервером:
+
+```shell
+$ pserve development.ini
+Starting server in PID 28330.
+Serving on http://localhost.localdomain:6543
+2018-05-19 11:13:03,644 INFO  [sqlalchemy.engine.base.Engine:1151][waitress] SHOW VARIABLES LIKE 'sql_mode'
+2018-05-19 11:13:03,644 INFO  [sqlalchemy.engine.base.Engine:1154][waitress] ()
+. . . . . . .
+```
+
+В этом примере SqlAlchemy в журнал выводит команды сервера (SQL), запускаемые при открытии базы данных.

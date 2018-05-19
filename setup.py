@@ -16,6 +16,7 @@ requires = [
     'pyramid_retry',
     'pyramid_tm',
     'SQLAlchemy',
+    'mysqlclient',
     'transaction',
     'zope.sqlalchemy',
     'waitress',
