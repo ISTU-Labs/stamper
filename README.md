@@ -199,6 +199,67 @@ Serving on http://localhost.localdomain:6543
 В этом примере SqlAlchemy в журнал выводит команды сервера (SQL), запускаемые при открытии базы данных.
 
 
+# Подключение нового дизайна
+
+## Загрузка модуля дизайна интерфейса
+
+
+В корневом директории пакета запускается команда
+
+```shell
+npm i vali-admin
+```
+
+Команда создает файл настроек проекта интерфейса
+
+```javascript
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "vali-admin": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/vali-admin/-/vali-admin-2.3.0.tgz",
+      "integrity": "sha512-Gxx6ysG4flu6w6xRYP0X0OpBwIKdRtXtDIqUPtb1ZekLdDA1WJz0ZRJc0JROb29sQ9yFZ/keHlfDTo+74HP8gw=="
+    }
+  }
+}
+```
+
+Затем необходимо ссылки поставить.
+
+Создать шаблон index.pt в директории `templates`
+
+```shell
+cp index.html index.pt
+```
+
+Подключение шаблона к обработчику URL
+
+```python
+@view_config(route_name='home', renderer='../templates/index.pt')
+def my_view(request):
+    try:
+        query = request.dbsession.query(MyModel)
+        one = query.filter(MyModel.name == 'one').first()
+    except DBAPIError:
+        return Response(db_err_msg, content_type='text/plain', status=500)
+    return {'one': one, 'project': 'Stamper Server'}
+```
+
+Подключение механизма шаблонов `Chameleon`
+
+```python
+    config.include('pyramid_chameleon')
+```
+
+Указать статический контент.
+
+```python
+    config.add_static_view('js', 'static/js', cache_max_age=3600)
+    config.add_static_view('css', 'static/css', cache_max_age=3600)
+```
+
 # Тестирование сайта
 
 По умолчанию сгенерированный пакет создает сервер, который выдает следующую страницу:
@@ -210,3 +271,5 @@ Serving on http://localhost.localdomain:6543
 После внесения вышеупомянутых модификаций получен новый вид сайта, соответствующий шаблону Vali Admin.
 
 ![Alt text](pics/vali.png?raw=true "Страница Vali Admin")
+
+Рис. 2. Страница Vali Admin
