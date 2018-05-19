@@ -1,0 +1,3 @@
+[run]
+source = stamper
+omit = stamper/test*
