@@ -21,6 +21,7 @@ requires = [
     'zope.sqlalchemy',
     'pyramid_chameleon',
     'waitress',
+    'bcrypt'
 ]
 
 tests_require = [
