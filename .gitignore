@@ -125,3 +125,4 @@ Data.fs*
 coverage
 test
 /node_modules
+/tmp
