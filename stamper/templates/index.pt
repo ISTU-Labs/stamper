@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      >
+  <metal:tag metal:define-macro="page">
   <head>
     <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
     <!-- Twitter meta-->
@@ -20,7 +26,12 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="/dz/dropzone.min.css"
+          >
     <title>Vali Admin</title>
+    <metal:tag define-slot="head">
+    </metal:tag>
   </head>
   <body class="app sidebar-mini rtl">
     <!-- Navbar-->
@@ -93,7 +104,8 @@
         </div>
       </div>
       <ul class="app-menu">
-        <li><a class="app-menu__item active" href="index.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>
+          <li><a class="app-menu__item active" href="/"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>
+          <li><a class="app-menu__item active" href="/upload"><i class="app-menu__icon fa fa-cloud-upload"></i><span class="app-menu__label">Загрузка изображений</span></a></li>
         <li class="treeview"><a class="app-menu__item" href="#" data-toggle="treeview"><i class="app-menu__icon fa fa-laptop"></i><span class="app-menu__label">UI Elements</span><i class="treeview-indicator fa fa-angle-right"></i></a>
           <ul class="treeview-menu">
             <li><a class="treeview-item" href="bootstrap-components.html"><i class="icon fa fa-circle-o"></i> Bootstrap Elements</a></li>
@@ -134,8 +146,8 @@
     <main class="app-content">
       <div class="app-title">
         <div>
-          <h1><i class="fa fa-dashboard"></i> Dashboard</h1>
-          <p>A free and modular admin template</p>
+          <h1 tal:content="view.title | default"><i class="fa fa-dashboard"></i> Dashboard</h1>
+          <p tal:content="view.subtitle | nothing">A free and modular admin template</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
           <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
@@ -143,7 +155,9 @@
         </ul>
       </div>
       <div class="row">
-        <div class="col-md-6 col-lg-3">
+          <metal:tag metal:define-slot="content">
+          </metal:tag>
+        <div class="col-md-6 col-lg-3" tal:replace="string:">
           <div class="widget-small primary coloured-icon"><i class="icon fa fa-users fa-3x"></i>
             <div class="info">
               <h4>Users</h4>
@@ -151,7 +165,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3" tal:replace="string:">
           <div class="widget-small info coloured-icon"><i class="icon fa fa-thumbs-o-up fa-3x"></i>
             <div class="info">
               <h4>Likes</h4>
@@ -159,7 +173,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3" tal:replace="string:">
           <div class="widget-small warning coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
             <div class="info">
               <h4>Uploades</h4>
@@ -167,7 +181,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3" tal:replace="string:">
           <div class="widget-small danger coloured-icon"><i class="icon fa fa-star fa-3x"></i>
             <div class="info">
               <h4>Stars</h4>
@@ -176,7 +190,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" tal:replace="string:">
         <div class="col-md-6">
           <div class="tile">
             <h3 class="tile-title">Monthly Sales</h3>
@@ -194,7 +208,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" tal:replace="string:">
         <div class="col-md-6">
           <div class="tile">
             <h3 class="tile-title">Features</h3>
@@ -233,6 +247,7 @@
     <script src="js/plugins/pace.min.js"></script>
     <!-- Page specific javascripts-->
     <script type="text/javascript" src="js/plugins/chart.js"></script>
+    <script src="/dz/dropzone.min.js"></script>
     <script type="text/javascript">
       var data = {
       	labels: ["January", "February", "March", "April", "May"],
@@ -273,10 +288,10 @@
       		label: "In-Progress"
       	}
       ]
-      
+
       var ctxl = $("#lineChartDemo").get(0).getContext("2d");
       var lineChart = new Chart(ctxl).Line(data);
-      
+
       var ctxp = $("#pieChartDemo").get(0).getContext("2d");
       var pieChart = new Chart(ctxp).Pie(pdata);
     </script>
@@ -292,4 +307,5 @@
       }
     </script>
   </body>
+  </metal:tag>
 </html>

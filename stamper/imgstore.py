@@ -1,20 +1,21 @@
 import kyotocabinet as kc
-import mmh3 as mmh3
+from .hashes import hexdigest, hash128
 
 
 class ImageStore:
-    def __init__(self, db_name):
-        self.db_name = db_name+".kch"  # Hash table
+    def __init__(self, dbname):
+        self.dbname = dbname+".kch"  # Hash table
         self.db = None
 
         self._open()
 
     def _open(self):
-        if self.db is not None:
+        if self.db is None:
             self.db = kc.DB()
-            if not db.open(self.db_name, DB.OWRITER | DB.OCREATE):
+            if not self.db.open(self.dbname, kc.DB.OWRITER | kc.DB.OCREATE):
                 raise IOError("open error: " +
                               str(db.error()), file=sys.stderr)
+        assert self.db is not None
 
     def _close(self):
         if self.db is not None:
@@ -24,7 +25,7 @@ class ImageStore:
     def save(self, content):
         if self.db is None:
             raise IOError("the database is not open")
-        id = _hash(content)
+        id = self._hash(content)
         if not self.db.set(id, content):
             raise IOError("set error: " + str(db.error()), file=sys.stderr)
         return id
@@ -50,70 +51,8 @@ class ImageStore:
         self._close()
 
 
-def hexdigest(digest):
-    """Convert byte digest to
-    hex digest
-    Arguments:
-    - `digest`: Byte array representing
-    digest
-    """
-    if type(digest) in (tuple, list):
-        digest = joindigest(digest)
-    if type(digest) == str:
-        return digest		# implied, that string is a digest already
-    if type(digest) == int:
-        digest = bindigest(digest)
-    return ''.join(["{:02x}".format(b) for b in digest])
-
-
-def bindigest(digest, bs=16):
-    if type(digest) in (tuple, list):
-        digest = joindigest(digest)
-    if type(digest) == str:
-        return bytearray.fromhex(digest)
-    if type(digest) == int:
-        digest = digest.to_bytes(bs, byteorder='little')
-    return digest
-
-
-def intdigest(digest):
-    if type(digest) in (tuple, list):
-        digest = joindigest(digest)
-    if type(digest) == int:
-        return digest
-    if type(digest) == str:
-        digest = bytearray.fromhex(digest)
-    return int.from_bytes(digest, byteorder='little')
-
-
-def hash128(content):
-    return mmh3.hash_bytes(content)
-
-
-def hash128_int(content):
-    return intdigest(hash128(content))
-
-
-def splitdigest(digest):
-    """Splits 128bit hash into two
-    64bit numbers."""
-    d = bindigest(digest)
-    l, h = intdigest(d[:8]), intdigest(d[8:])
-    return l, h
-
-
-two64 = 1 << 64
-
-
-def joindigest(digest):
-    l, h = digest
-    if l < 0:
-        l = two64 - l
-    if h < 0:
-        h = two64 - h
-    l = bindigest(l, bs=8)
-    h = bindigest(h, bs=8)
-    return l + h
+def get_img_store(imgstore, request):
+    return imgstore
 
 
 def includeme(config):
@@ -124,21 +63,20 @@ def includeme(config):
 
     """
     settings = config.get_settings()
-    settings['tm.manager_hook'] = 'pyramid_tm.explicit_manager'
 
     # use pyramid_tm to hook the transaction lifecycle to the request
-    config.include('pyramid_tm')
+    # config.include('pyramid_tm')
 
     # use pyramid_retry to retry a request when transient exceptions occur
-    config.include('pyramid_retry')
+    # config.include('pyramid_retry')
 
-    session_factory = get_session_factory(get_engine(settings))
-    config.registry['dbsession_factory'] = session_factory
+    imgstoreobj = ImageStore(settings["imgstore.dbname"])
+
+    config.registry['imgstore'] = imgstoreobj
 
     # make request.dbsession available for use in Pyramid
     config.add_request_method(
-        # r.tm is the transaction manager used by pyramid_tm
-        lambda r: get_tm_session(session_factory, r.tm),
-        'dbsession',
+        lambda request: get_img_store(imgstoreobj, request),
+        'imgstore',
         reify=True
     )

@@ -9,6 +9,6 @@ def main(global_config, **settings):
     config.include('pyramid_chameleon')
     config.include('.models')
     config.include('.routes')
-    config.include('.imgstore')
+    config.include('.imgstore')  # Добавить сервис хранения изображений.
     config.scan()
     return config.make_wsgi_app()
