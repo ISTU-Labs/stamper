@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="load: index.pt"
+>
+    <metal:tag metal:fill-slot="content">
+        <form action="/login" method="POST" class="text-sm-left">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputEmail1">Пользователь</label>
+                    <input type="text" class="form-control" id="exampleInputEmail1"
+                           name="user"
+                           placeholder="Введите имя пользователя">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="exampleInputPassword1">Пароль</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1"
+                           name="password"
+                           placeholder="Введите пароль">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" name="login">Войти</button>
+            <br/><br/>
+            <div class="form-group">
+                <label for="exampleInputPassword2">Пароль</label>
+                <input type="password" class="form-control" id="exampleInputPassword2"
+                       name="repeat"
+                       placeholder="Повторите пароль">
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="fam1">Фамилия</label>
+                    <input type="text" class="form-control" id="fam1"
+                           name="lastname"
+                           placeholder="Введите фамилию">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="fam2">Имя</label>
+                    <input type="text" class="form-control" id="fam2"
+                           name="firstname"
+                           placeholder="Введите имя">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="fam3">Отчество</label>
+                    <input type="text" class="form-control" id="fam3"
+                           name="surname"
+                           placeholder="Введите отчество">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="InputEmail1">Адрес электронной почты</label>
+                    <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp"
+                           name="email"
+                           placeholder="Введите Email">
+                    <small id="emailHelp" class="form-text text-muted">Ваш email и телефон мы будем использовать только для связи с вами.</small>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="fam4">Телефон</label>
+                    <input type="tel" class="form-control" id="fam4" size="20"
+                           name="phone"
+                           placeholder="Телефон +# (###) ### ##-##">
+                </div>
+            </div>
+            <div class="form-row">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <div class="form-group form-check col-md-7">
+                    <input type="checkbox" class="form-check-input" id="agreeCheck1"
+                           name="agree">
+                    <label class="form-check-label" for="agreeCheck1" class="rspo-blue"
+                    >Я согласен, что за мною будут следить на этом сайте!</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-dark"
+                    class="btn btn-success"
+                    name="register">Зарегистрироваться</button>
+        </form>
+    </metal:tag>
+</html>

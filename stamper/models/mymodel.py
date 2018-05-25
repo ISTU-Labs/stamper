@@ -20,6 +20,8 @@ class User(Base):
 
     images = relationship("Image", back_populates="user")
 
+    isvalid = True
+
 
 class Mark(Base):
     __tablename__ = 'mark'

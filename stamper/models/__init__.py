@@ -3,6 +3,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import configure_mappers
 import zope.sqlalchemy
 
+from pyramid.session import SignedCookieSessionFactory
+
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 
@@ -71,13 +73,19 @@ def includeme(config):
     # use pyramid_retry to retry a request when transient exceptions occur
     config.include('pyramid_retry')
 
-    session_factory = get_session_factory(get_engine(settings))
-    config.registry['dbsession_factory'] = session_factory
+    db_session_factory = get_session_factory(get_engine(settings))
+    config.registry['dbsession_factory'] = db_session_factory
 
     # make request.dbsession available for use in Pyramid
     config.add_request_method(
         # r.tm is the transaction manager used by pyramid_tm
-        lambda r: get_tm_session(session_factory, r.tm),
+        lambda r: get_tm_session(db_session_factory, r.tm),
         'dbsession',
         reify=True
     )
+
+    session_factory = SignedCookieSessionFactory('itsaseekreet')
+
+    # FIXME: Доработать до зашифровки сессии.
+
+    config.set_session_factory(session_factory)

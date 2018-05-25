@@ -2,8 +2,12 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
+import pyramid.httpexceptions as exc
 
 from ..models import User
+from ..hashes import (
+    check_password
+)
 
 
 class View:
@@ -17,6 +21,45 @@ class ImageUploadView(View):
         self.subtitle = ''
 
 
+class LoginView(View):
+    def __init__(self):
+        self.title = "Регистрация пользователя"
+        self.subtitle = 'Вам необходимо войти или зарегистрироваться как новый пользователь'
+
+
+class UnknownUser:
+    def __init__(self):
+        self.isvalid = False
+
+
+unknownUser = UnknownUser()
+
+
+def get_user(request):
+    session = request.session
+    if "user" in session:
+        return session["user"]
+    return unknownUser
+
+
+def go(request, route, message=None):
+    if "message" in request.session:
+        del request.session["message"]
+
+    if message is not None:
+        request.session["message"] = message
+
+    raise exc.HTTPFound(request.route_url(route))
+
+
+def relogin(request, message=None):
+    return go(request, route="login", message=message)
+
+
+def go_work(request, message=None):
+    return go(request, route="image-upload", message=message)
+
+
 @view_config(route_name='home', renderer='../templates/home.pt')
 def my_view(request):
     try:
@@ -24,11 +67,20 @@ def my_view(request):
         one = query.filter(User.nick == 'admin').first()
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'one': one, 'project': 'Stamper Server', 'view': View()}
+    session = request.session
+
+    return {'one': one,
+            'project': 'Stamper Server',
+            'view': View(),
+            'user': get_user(request)
+            }
 
 
 @view_config(route_name='add-image', renderer='json')
 def add_image(request):
+
+    user = get_user(request)
+
     form = request.POST
     fileFS = form.get("file", None)
     alert = "error"
@@ -45,13 +97,75 @@ def add_image(request):
         return {"result": 0, "message": "Изображение не получено", "alert": alert}
 
     alert = "success"
+
     imgstore.commit()
-    return {"result": 1, "message": "Изображение сохранено", "alert": alert}
+    return {"result": 1, "message": "Изображение сохранено", "alert": alert,
+            "id": id}
 
 
 @view_config(route_name='image-upload', renderer='../templates/upload.pt')
 def image_upload(request):
-    return {'view': ImageUploadView}
+    user = get_user(request)
+    if user.isvalid:
+        return {'view': ImageUploadView,
+                'user': user
+                }
+    else:
+        relogin(request)
+
+
+@view_config(route_name='login', renderer='../templates/login.pt',
+             request_method="GET")
+def login_GET(request):
+    user = get_user(request)
+    if user.isvalid:
+        raise exc.HTTPBadRequest()
+
+    else:
+        return {'view': LoginView,
+                'user': user
+                }
+
+
+@view_config(route_name='login', renderer='json', request_method="POST")
+def login_POST(request):
+    post = request.POST
+    user = unknownUser
+    try:
+        query = request.dbsession.query(User)
+        user = query.filter(User.nick == post["user"]).first()
+    except DBAPIError:
+        return Response(db_err_msg, content_type='text/plain', status=500)
+
+    register = post.get("register", None)
+    register = register is not None
+
+    session = request.session
+
+    if "usage" in session:
+        del session["user"]
+
+    session["user"] = unknownUser
+
+    if user is None:
+        if register:
+            # регистрация
+            pass
+        else:
+            relogin(request, "Пользователь не найден")
+    else:
+        if register:
+            relogin(request, "Такой ник уже использован")
+        else:
+            if check_password(post["password"], user.passwd):
+                session["user"] = user
+                return go_work(request, "Вы вошли в систему")
+            else:
+                return relogin(request, "Пароль неверный")
+
+    return {
+        'user': user.nick
+    }
 
 
 db_err_msg = """\

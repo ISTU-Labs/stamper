@@ -27,15 +27,28 @@ class ImageStore:
             raise IOError("the database is not open")
         id = self._hash(content)
         if not self.db.set(id, content):
-            raise IOError("set error: " + str(db.error()), file=sys.stderr)
+            raise IOError("save error: " + str(db.error()), file=sys.stderr)
         return id
 
     def load(self, id):
-        content = db.get(id)
+        content = self.db.get(id)
         if content:
             return content
 
-        raise IOError("get error: " + str(db.error()), file=sys.stderr)
+        raise IOError("load error: " + str(db.error()), file=sys.stderr)
+
+    def remove(self, id=None, content=None):
+        if id is not None:
+            if not self.db.remove(id):
+                raise IOError("remove error: " +
+                              str(db.error()), file=sys.stderr)
+            return True
+
+        if content is not None:
+            id = self._hash(content)
+            return self.remove(id=id)
+
+        raise ValueError("neither id nor content supplied as paramaters")
 
     def start(self):
         self.db.begin_transaction()
